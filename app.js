@@ -21,10 +21,11 @@ function backupGits() {
 		conn.query("SELECT * FROM gits;", function(err, results){
 			if(err) {
 				console.log("Query error:" + err);
-			};
-			for(var i=0; i<results.length;i++) {
-				var gitInfo = results[i];
-				gitbackup.emit('clone', gitInfo);
+			} else {
+				for(var i=0; i<results.length;i++) {
+					var gitInfo = results[i];
+					gitbackup.emit('clone', gitInfo);
+				};
 			};
 			conn.end();
 	});
@@ -35,10 +36,11 @@ function backupMysql() {
 	conn.query("SELECT * FROM mysqlhosts;", function(err, results){
 		if(err) {
 			console.log("Query error:" + err);
-		};
-		for(var i=0; i<results.length;i++) {
-			var dbInfo = results[i];
-			mysqlbackup.emit('serverConnect', dbInfo);
+		} else {
+			for(var i=0; i<results.length;i++) {
+				var dbInfo = results[i];
+				mysqlbackup.emit('serverConnect', dbInfo);
+			};
 		};
 		conn.end();
 	});
