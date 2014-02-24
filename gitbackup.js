@@ -1,6 +1,21 @@
 var util = require('util');
+var fs = require('fs');
 var EventEmitter = require('events').EventEmitter;
 var exec = require('child_process').exec;
+
+var getWeekOfMonth = function(d, exact) {
+    var month = d.getMonth()
+        , year = d.getFullYear()
+        , firstWeekday = new Date(year, month, 1).getDay()
+        , lastDateOfMonth = new Date(year, month + 1, 0).getDate()
+        , offsetDate = d.getDate() + firstWeekday - 1
+        , index = 1 // start index at 0 or 1, your choice
+        , weeksInMonth = index + Math.ceil((lastDateOfMonth + firstWeekday - 7) / 7)
+        , week = index + Math.floor(offsetDate / 7)
+    ;
+    if (exact || week < 2 + index) return week;
+    return week === weeksInMonth ? index + 5 : week;
+};
 
 /*******************
 basic obj of gitInfo, just a way to contain the url, backupPath, and repoName
@@ -18,8 +33,10 @@ var GitBackup = function(logger) {
 	this.on('clone', function(gitInfo) {
 
 		var cmd = '/usr/bin/git clone ' + gitInfo.url;
+		var wholeBackupDir = gitInfo.backupPath + getWeekOfMonth(new Date(), true) + '/';
+		try { fs.mkdirSync(wholeBackupDir); } catch(e) {}
 		var options = {
-			cwd:	gitInfo.backupPath
+			cwd:	wholeBackupDir
 		};
 		exec(cmd, options,
 			function(error, stdout, stderr) {
@@ -28,7 +45,7 @@ var GitBackup = function(logger) {
 					if(errorStr.indexOf('already exists') > -1) {
 						self.emit('pull',gitInfo);
 					} else {
-						console.log('git clone error: ' + error);
+						console.log('git clone error: ' +gitInfo.url+ ' ' + error);
 						return;
 					}
 				} else {
@@ -42,7 +59,9 @@ var GitBackup = function(logger) {
 	
 	this.on('pull', function(gitInfo) {
 		var cmd = '/usr/bin/git pull';
-		var options = {cwd:gitInfo.backupPath + gitInfo.repoName};
+		var wholeBackupDir = gitInfo.backupPath + getWeekOfMonth(new Date(), true) + '/';
+		try { fs.mkdirSync(wholeBackupDir); } catch(e) {}
+		var options = {cwd:wholeBackupDir + gitInfo.repoName};
 		exec(cmd, options,
 			function(error, stdout, stderr) {
 				var msg = '';
