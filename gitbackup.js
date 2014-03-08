@@ -33,7 +33,8 @@ var GitBackup = function(logger) {
 	this.on('clone', function(gitInfo) {
 
 		var cmd = '/usr/bin/git clone ' + gitInfo.url;
-		var wholeBackupDir = gitInfo.backupPath + getWeekOfMonth(new Date(), true) + '/';
+		//var wholeBackupDir = gitInfo.backupPath + getWeekOfMonth(new Date(), true) + '/';
+		var wholeBackupDir = gitInfo.backupPath;
 		try { fs.mkdirSync(wholeBackupDir); } catch(e) {}
 		var options = {
 			cwd:	wholeBackupDir
@@ -59,7 +60,8 @@ var GitBackup = function(logger) {
 	
 	this.on('pull', function(gitInfo) {
 		var cmd = '/usr/bin/git pull';
-		var wholeBackupDir = gitInfo.backupPath + getWeekOfMonth(new Date(), true) + '/';
+		//var wholeBackupDir = gitInfo.backupPath + getWeekOfMonth(new Date(), true) + '/';
+		var wholeBackupDir = gitInfo.backupPath;
 		try { fs.mkdirSync(wholeBackupDir); } catch(e) {}
 		var options = {cwd:wholeBackupDir + gitInfo.repoName};
 		exec(cmd, options,

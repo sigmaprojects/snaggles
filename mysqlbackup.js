@@ -37,7 +37,7 @@ var MySQLBackup = function(logger) {
 	});
 	
 	this.on('serverConnect', function(dbInfo) {
-		var mysql = exec('mysql -h '+dbInfo.host+' --user='+dbInfo.user+' -p'+dbInfo.pass+' -e "SHOW DATABASES;" | grep -Ev "(Database|information_schema)"');
+		var mysql = exec('mysql -h '+dbInfo.host+' --user='+dbInfo.user+' -p'+dbInfo.pass+' -e "SHOW DATABASES;" | grep -Ev "(Database|information_schema)"', {maxBuffer:819200});
 		mysql.stdout.on('data', function (data) {
 			var databases = data.toString().split('\n');
 			for(var i=0; i<databases.length;i++) {
@@ -63,7 +63,7 @@ var MySQLBackup = function(logger) {
 		var dbFilePath = wholeBackupDir + dbInfo.dbName+ '.gz';
 
 		var dbName = dbInfo.dbName
-		exec('mysqldump -h '+dbInfo.host+' --force --opt --user='+dbInfo.user+' -p'+dbInfo.pass+' --databases ' +dbInfo.dbName+ ' | gzip -9 > "' +dbFilePath+ '"', function(error, stdout, stderr) {
+		exec('mysqldump -h '+dbInfo.host+' --force --opt --user='+dbInfo.user+' -p'+dbInfo.pass+' --databases ' +dbInfo.dbName+ ' | gzip -9 > "' +dbFilePath+ '"',{maxBuffer:819200},function(error, stdout, stderr) {
 			if(error) {console.log('error at backupDatabase exec:', error); return;}
 			exec('wc -c < ' + dbFilePath, function(err, stdo, stde){
 				if(err) {return;};
