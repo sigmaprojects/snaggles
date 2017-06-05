@@ -8,7 +8,8 @@ var GitBackup = require('./gitbackup.js');
 var FileBackup = require('./filebackup.js');
 
 var config = require('./config.js');
-var db_config = config.db;
+//var db_config = config.db;
+var db_config = new config();
 
 
 var logger = new Logger(db_config);
@@ -29,7 +30,7 @@ function backupGits() {
 					gitbackup.emit('clone', gitInfo);
 				};
 			};
-			conn.end();
+			conn.destroy();
 	});
 }
 
@@ -44,7 +45,7 @@ function backupMysql() {
 				mysqlbackup.emit('serverConnect', dbInfo);
 			};
 		};
-		conn.end();
+		conn.destroy();
 	});
 }
 
@@ -59,7 +60,7 @@ function backupDirectories() {
 					filebackup.emit('archive', fileInfo);
 				};
 			};
-			conn.end();
+			conn.destroy();
 	});
 }
 

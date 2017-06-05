@@ -40,6 +40,7 @@ var FileBackup = function(logger) {
 
 		var options = {
 			//cwd:	wholeBackupDir
+			maxBuffer: 1024 * 800
 		};
 		exec(cmd, options,
 			function(error, stdout, stderr) {
